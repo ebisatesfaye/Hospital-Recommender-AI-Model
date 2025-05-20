@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Health Care Center</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+  </head>
+<style>
+    .chat-input {
+        background: transparent;
+        border: none;
+        outline: none;
+        color: white;
+        font-size: 16px;
+        width: 100%;
+        height: 100px;
+        align-items: center;
+        }
+    .chat-input-container {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #2c2c2c;
+    border-radius: 2.5rem;
+    padding: 10px 20px;
+    width: 50%;
+    display: flex;
+    margin-bottom: 3%;
+    align-items: center;
+    box-shadow: 0 0 8px rgba(0,0,0,0.5);
+    z-index: 1000; /* Ensure it stays on top */
+    }
+    .chat-input::placeholder {
+      color: #999;
+      opacity: 1;
+    }
+    /* Optional: Add icons or buttons */
+    .chat-btn {
+      background: rgb(248, 243, 243);
+      border: none;
+      color: white;
+      margin-left: 10px;
+      cursor: pointer;
+      font-size: 18px;
+      border-radius: 70%;
+    }
+    .chat-btn:hover {
+        background: #999;
+    }
+</style>
+<style>
+    body{
+        background: #212121;
+        color: white;
+    }
+    .logo {
+        width: 50px;
+        height: 50px;
+        color: black;
+        margin-top: 0;
+        margin-left: 2px;
+    }
+    .myimg {
+        width: 50px;
+        height: 50px;
+        border: 2px solid black;
+        border-radius: 25px;
+    }
+    .custom-placeholder{
+        border-color: #303030;
+    }
+    .display-result{
+      /* i need to display the result at center */
+      background-color: #212121;
+      color: white;
+      justify-content: center;
+      margin-top: 80px;
+      align-items: center;
+      height: 100%;
+      margin-left: 25%;
+      width: 50%;
+    max-height: 500px; /* or any height you want */
+    overflow-y: auto;
+    padding: 10px;
+    border: 0px solid #212121; /* optional, just to define the area */
+    }
+        /* Scrollbar styles for WebKit browsers */
+    .display-result.messages::-webkit-scrollbar {
+        width: 8px; /* width of the scrollbar */
+    }
+    .display-result.messages::-webkit-scrollbar-track {
+        background: #212121; /* color of the track (background) */
+        border-radius: 10px;
+    }
+
+    .display-result.messages::-webkit-scrollbar-thumb {
+        background-color: #7c7e7c; /* color of the scroll thumb */
+        border-radius: 20px;
+        width: 20px; /* width of the thumb */
+        border: 0px solid  #212121 /* optional: border to separate thumb from track */
+    }
+    .display-result.messages::-webkit-scrollbar-thumb:hover {
+        background-color: #8d908d; /* darker color on hover */
+        cursor: pointer;
+    }
+</style>
+<style>
+.autocomplete-items {
+position: absolute;
+border: 1px solid #ccc;
+background: white;
+z-index: 99;
+color: black;
+border-bottom: none;
+border-top: none;
+max-height: 200px;
+overflow-y: auto;
+}
+.autocomplete-items div {
+padding: 10px;
+cursor: pointer;
+}
+.autocomplete-items div:hover {
+background-color: #e9e9e9;
+}
+</style>
+
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style=" position: fixed; top: 0;">
+        <div class="container-fluid">
+            <!-- Logo at the top-left corner -->
+            <div class="logo">
+                <img class="myimg" src="{{ url_for('static', filename='img.png') }}" alt="">        
+            </div>
+            <br>
+            <a class="navbar-brand ml-0" href="#"> &nbsp;&nbsp; Health Center</a>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            </div>
+        </div>
+    </nav>
+
+    <!-- main form of page -->
+    <h1 class="mt-4  text-center text-green" style=" position: fixed; top: 30px; left:35%;">Hospital Recommender</h1>
+    {% if hospitals %}
+          <div style="margin: 200px;" id="messages"></div>
+   <div class="display-result messages" >
+        <!-- <div>
+            <p>Disease Description : </p>
+             <p class="ms-5">{{ dis_des }}</p>
+        </div>
+        <div>
+            <p>Disease Precaution : </p>
+                {% for precaution in my_precautions %}
+                <p class="ms-5">{{ precaution }}</p>
+                {% endfor %}
+        </div>
+        <div>
+            <p>Medications : </p>
+            {% for medication in medications %}
+        
+                <p class="ms-5">{{ medication }}</p>
+            {% endfor %}
+        </div>
+        <div>
+            {% for hospital in hospitals %}
+                    <p>Name : {{ hospital['Hospital_Name'] }}</p>
+                    <p>Location : {{ hospital['Region'] }} , {{hospital['City'] }}</p>  <br>
+            {% endfor %}
+        </div>  -->
+    <div>
+        {% for hospital in hospitals %}
+            <p>Name : {{ hospital }}</p>
+            <!-- <p>Location : {{ hospital['Region'] }} , {{hospital['City'] }}</p><br> -->
+        {% endfor %}
+    </div>  
+   </div>
+   {% endif %}
+
+ 
+
+{% if predicted_disease %}
+    <!-- Results -->
+    <div class="container">
+
+        <div class="result-container">
+            <!-- Buttons to toggle display -->
+            <!-- <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#diseaseModal" style="padding:4px;  margin: 5px 40px 5px 0; font-size:20px;font-weight:bold; width:140px; border-radius:5px; background:#F39334;color:black;">Disease</button>
+            <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#descriptionModal" style="padding:4px; margin: 5px 40px 5px 0; font-size:20px;font-weight:bold; width:140px; border-radius:5px; background:#268AF3 ;color:black;">Description</button>
+            <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#precautionModal" style="padding:4px; margin: 5px 40px 5px 0; font-size:20px;font-weight:bold; width:140px; border-radius:5px; background:#F371F9 ;color:black;">Precaution</button>
+            <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#medicationsModal" style="padding:4px; margin: 5px 40px 5px 0; font-size:20px;font-weight:bold; width:140px;border-radius:5px; background:#F8576F ;color:black;">Medications</button>
+            <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#workoutsModal" style="padding:4px; margin: 5px 40px 5px 0; font-size:20px;font-weight:bold; width:140px; border-radius:5px; background:#99F741 ;color:black;">Workouts</button>
+            <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#dietsModal" style="padding:4px; margin: 5px 40px 5px 0; font-size:20px;font-weight:bold; width:140px; border-radius:5px; background:#E5E23D;color:black;">Diets</button>
+            <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#hospitalsModal" style="padding:4px; margin: 5px 40px 5px 0; font-size:20px;font-weight:bold; width:140px; border-radius:5px; background:#64c1ed;color:black;">Hospitals</button> -->
+
+        </div>
+    </div>
+{% endif %}
+<div>
+        <!-- Disease Modal -->
+            <div class="modal fade" id="diseaseModal" tabindex="-1" aria-labelledby="diseaseModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header" style="background-color: #020606; color:white;"> <!-- Set header background color inline -->
+                            <h5 class="modal-title" id="diseaseModalLabel">Predicted Disease</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" style="background-color: modal-body-color;"> <!-- Set modal body background color inline -->
+                            <p>{{ predicted_disease }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Description Modal -->
+            <div class="modal fade" id="descriptionModal" tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header" style="background-color: #020606; color:white;">
+                            <h5 class="modal-title" id="descriptionModalLabel">Description</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>{{ dis_des }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <!-- Precaution Modal -->
+            <div class="modal fade" id="precautionModal" tabindex="-1" aria-labelledby="precautionModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header" style="background-color: #020606; color:white;">
+                            <h5 class="modal-title" id="precautionModalLabel">Precaution</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <ul>
+                                {% for i in my_precautions %}
+                                    <li>{{ i }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medications Modal -->
+            <div class="modal fade" id="medicationsModal" tabindex="-1" aria-labelledby="medicationsModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header" style="background-color: #020606; color:white;">
+                            <h5 class="modal-title" id="medicationsModalLabel">Medications</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <ul>
+                                {% for i in medications %}
+                                    <li>{{ i }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workouts Modal -->
+            <div class="modal fade" id="workoutsModal" tabindex="-1" aria-labelledby="workoutsModalLabel" aria-hidden="true">
+                <div class="modal-dialog" >
+                    <div class="modal-content">
+                        <div class="modal-header" style="background-color: #020606; color:white;">
+                            <h5 class="modal-title" id="workoutsModalLabel">Workouts</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <ul>
+                                {% for i in workout %}
+                                    <li>{{ i }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diets Modal -->
+            <div class="modal fade" id="dietsModal" tabindex="-1" aria-labelledby="dietsModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header" style="background-color: #020606; color:white;">
+                            <h5 class="modal-title" id="dietsModalLabel">Diets</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <ul>
+                                {% for i in my_diet %}
+                                    <li>{{ i }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hospitals Modal -->
+            <div class="modal fade" id="hospitalsModal" tabindex="-1" aria-labelledby="hospitalsModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header" style="background-color: #020606; color:white;"> <!-- Set header background color inline -->
+                            <h5 class="modal-title" id="hospitalsModalLabel">Recommended Hospitals</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" style="background-color: modal-body-color;"> <!-- Set modal body background color inline -->
+                            <p>
+                                <ul>
+                                
+                                    {% for hospital in hospitals %}
+                                    <br>
+                                        <li>Name : {{ hospital['Hospital_Name'] }}</li>
+                                        <li>Location : {{ hospital['Location'] }}</li>
+                                        <br>
+                                    {% endfor %}
+                        
+                                </ul>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+</div>
+
+
+
+<!-- <div class="container  my-4 mt-4" style="background: rgb(195, 233, 243); color: white; border-radius: 5px; padding: 40px;"> -->
+
+    <div class="main">
+        <!-- <form id="symptomForm"> -->
+
+    <form action="/predict" method="post">
+        <!-- <div class="form-group">
+            <label for="symptoms" class="mb-1">Write Your Case Here : </label>
+            <input type="text" class="form-control chat-input custom-placeholder", id="symptoms" name="symptoms" style="background: #303030; color: white; border-radius: 30px; padding: 40px;" placeholder="i live in Ethiopia and need of medical service for cancer etc">
+
+        </div> -->
+        {% if message %}
+        <p class="display-result">{{ message }}</p>
+        {% endif %}
+        <br>
+        <!-- <button type="submit" class="btn btn-danger btn-lg" style="width: 100%; padding: 14px; margin-bottom: 5px;">Recommend</button> -->
+       
+        <div class="form-group chat-input-container">
+            <input type="text" id="symptoms" name="symptoms" class="chat-input" placeholder="Describe Your Case And See The Recommended Hospitals For You" />
+            <button class="chat-btn" type="submit" onclick="submitMessage()" aria-label="Send">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" c height="25" fill="black" viewBox="0 0 24 24">
+                    <path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.59 5.58L20 12l-8-8-8 8z"/>
+                </svg>
+            </button>
+        </div>
+    </form> 
+
+    </div>
+<!-- </div> -->
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("symptoms");
+    let symptoms = [];
+
+    // Fetch the symptoms list from the server
+    fetch("/get_symptoms")
+        .then(response => response.json())
+        .then(data => {
+            symptoms = data;
+        });
+
+    // Listen for input changes
+    input.addEventListener("input", function () {
+        const val = this.value;
+        closeAllLists();
+
+        if (!val) return false;
+
+        const list = document.createElement("div");
+        list.setAttribute("id", this.id + "-autocomplete-list");
+        list.setAttribute("class", "autocomplete-items");
+        this.parentNode.appendChild(list);
+
+        let count = 0;
+
+        symptoms.forEach(function (symptom) {
+            if (symptom.toLowerCase().includes(val.toLowerCase()) && count < 10) {
+                const item = document.createElement("div");
+                item.innerHTML = "<strong>" + symptom.substr(0, val.length) + "</strong>";
+                item.innerHTML += symptom.substr(val.length);
+                item.innerHTML += "<input type='hidden' value='" + symptom + "'>";
+
+                item.addEventListener("click", function () {
+                    input.value = this.getElementsByTagName("input")[0].value;
+                    closeAllLists();
+                });
+
+                list.appendChild(item);
+                count++;
+            }
+        });
+    });
+
+    function closeAllLists(elmnt) {
+        const items = document.getElementsByClassName("autocomplete-items");
+        for (let i = 0; i < items.length; i++) {
+            if (elmnt != items[i] && elmnt != input) {
+                items[i].parentNode.removeChild(items[i]);
+            }
+        }
+    }
+
+    document.addEventListener("click", function (e) {
+        closeAllLists(e.target);
+    });
+});
+</script>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+</body>
+
+</html>
