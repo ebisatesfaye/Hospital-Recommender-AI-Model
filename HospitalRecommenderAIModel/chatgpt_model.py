@@ -15,7 +15,7 @@ import re
 import ast
 
 
-df = pd.read_csv("Ethiopian_Hospitals_Dataset.csv")
+df = pd.read_csv("datasets/Ethiopian_Hospitals_Dataset.csv")
 # Step 1: Preprocess the DataFrame
 df[['Region', 'City', 'Specialties', 'Services', 'Disease']] = df[[
     'Region', 'City', 'Specialties', 'Services', 'Disease'
@@ -54,10 +54,10 @@ model_pipeline = Pipeline(steps=[
 model_pipeline.fit(X, y_encoded)
 
 # Step 6: Save the model and label encoder for later use
-with open("hospital_recommender_model.pkl", "wb") as f:
+with open("trained_models/hospital_recommender_model.pkl", "wb") as f:
     pickle.dump(model_pipeline, f)
 
-with open("hospital_label_encoder.pkl", "wb") as f:
+with open("trained_models/hospital_label_encoder.pkl", "wb") as f:
     pickle.dump(label_encoder, f)
 
 

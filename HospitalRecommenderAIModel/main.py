@@ -9,13 +9,13 @@ import ast
 app = Flask(__name__)
 
 # load databasedataset===================================
-sym_des = pd.read_csv("symtoms_df.csv")
-precautions = pd.read_csv("precautions_df.csv")
-workout = pd.read_csv("workout_df.csv")
-description = pd.read_csv("description.csv")
-medications = pd.read_csv('medications.csv')
-diets = pd.read_csv("diets.csv")
-ethiopian_hospitals = pd.read_csv("Ethiopian_Hospitals_Dataset.csv")
+sym_des = pd.read_csv("datasets/symtoms_df.csv")
+precautions = pd.read_csv("datasets/precautions_df.csv")
+workout = pd.read_csv("datasets/workout_df.csv")
+description = pd.read_csv("datasets/description.csv")
+medications = pd.read_csv('datasets/medications.csv')
+diets = pd.read_csv("datasets/diets.csv")
+ethiopian_hospitals = pd.read_csv("datasets/Ethiopian_Hospitals_Dataset.csv")
 
 # Select specific columns, e.g., 'Name', 'Region', 'Type'
 # selected_columns = ethiopian_hospitals[['Name', 'Region', 'Type']]
@@ -23,7 +23,7 @@ ethiopian_hospitals = pd.read_csv("Ethiopian_Hospitals_Dataset.csv")
 # Convert to list of dictionaries
 # list_of_dicts = selected_columns.to_dict(orient='records')
 # load model===========================================
-svc = pickle.load(open('svc.pkl','rb'))
+svc = pickle.load(open('trained_models/svc.pkl','rb'))
 
 #============================================================
 # custome and helping functions

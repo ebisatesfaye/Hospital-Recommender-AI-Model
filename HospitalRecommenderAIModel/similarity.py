@@ -7,7 +7,7 @@ from scipy.sparse import hstack
 from sklearn.preprocessing import StandardScaler
 from scipy import sparse
 # Load dataset
-dataset_path = "Ethiopian_Hospitals_Dataset.csv"
+dataset_path = "datasets/Ethiopian_Hospitals_Dataset.csv"
 df = pd.read_csv(dataset_path)
 
 # Handle NaN values (replace with empty string or fill accordingly)
@@ -42,7 +42,7 @@ combined_features = hstack([region_tfidf, cities_tfidf, specialties_tfidf, servi
 cosine_sim = cosine_similarity(combined_features)
 
 # Save the similarity matrix
-with open("Hospitals_similarity.pkl", "wb") as file:
+with open("trained_models/Hospitals_similarity.pkl", "wb") as file:
     pickle.dump(cosine_sim, file)
 
 print("Hospitals similarity matrix saved as Hospitals_similarity.pkl")

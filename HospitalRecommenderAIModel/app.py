@@ -10,15 +10,15 @@ import ast
 app = Flask(__name__)
 
 # load databasedataset===================================
-sym_des = pd.read_csv("symtoms_df.csv")
-precautions = pd.read_csv("precautions_df.csv")
-workout = pd.read_csv("workout_df.csv")
-description = pd.read_csv("description.csv")
-medications = pd.read_csv('medications.csv')
-diets = pd.read_csv("diets.csv")
-ethiopian_hospitals = pd.read_csv("Ethiopian_Hospitals_Dataset.csv")
+sym_des = pd.read_csv("datasets/symtoms_df.csv")
+precautions = pd.read_csv("datasets/precautions_df.csv")
+workout = pd.read_csv("datasets/workout_df.csv")
+description = pd.read_csv("datasets/description.csv")
+medications = pd.read_csv('datasets/medications.csv')
+diets = pd.read_csv("datasets/diets.csv")
+ethiopian_hospitals = pd.read_csv("datasets/Ethiopian_Hospitals_Dataset.csv")
 
-with open("Hospitals_Model.pkl", "rb") as file:
+with open("trained_models/Hospitals_Model.pkl", "rb") as file:
     cosine_sim = pickle.load(file)
 hospital_names = ethiopian_hospitals['Hospital_Name'].tolist()
 
@@ -104,7 +104,7 @@ split_services = [service.strip() for entry in known_services for service in ent
 
 unique_services = list(set(split_services))
 unique_services.sort()  # Optional: sort alphabetically
-print(unique_services)
+# print(unique_services)
 known_Disease = ethiopian_hospitals['Disease'].unique().tolist()
 
 def extract_keywords_from_input(text):
