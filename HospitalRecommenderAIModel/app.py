@@ -1,6 +1,8 @@
 from difflib import get_close_matches
 from flask import Flask, request, render_template, jsonify  # Import jsonify
 import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 import pandas as pd
 import pickle
 import re
@@ -143,7 +145,31 @@ def recommend_hospitals(hospital_name, cosine_sim, hospital_names, top_n=5):
     except ValueError:
         return ["Hospital not found. Please check the name."]
 
- 
+
+
+# Mini Full Project
+#===========================================================
+# Load and preprocess data
+df = pd.read_csv("datasets/Ethiopian_Hospitals_Dataset.csv")
+df[['Region', 'City', 'Specialties', 'Services', 'Disease']] = df[[
+    'Region', 'City', 'Specialties', 'Services', 'Disease'
+]].fillna('')
+df['combined'] = df['Region'] + ' ' + df['City'] + ' ' + df['Specialties'] + ' ' + df['Services'] + ' ' + df['Disease']
+
+# TF-IDF
+tfidf = TfidfVectorizer()
+tfidf_matrix = tfidf.fit_transform(df['combined'])
+
+# Recommendation function
+def recommend_hospitals2(query, top_n=5):
+    user_vec = tfidf.transform([query])
+    similarities = cosine_similarity(user_vec, tfidf_matrix)
+    top_indices = similarities[0].argsort()[-top_n:][::-1]
+    return df.iloc[top_indices][['Hospital_Name', 'Region', 'City', 'Services']]
+#===========================================================
+
+
+
 # creating routes========================================
 @app.route("/")
 def index():
@@ -155,15 +181,17 @@ def index():
 def home():
     if request.method == 'POST':
         user_input = request.form['symptoms'].strip().lower()
-        keywords = extract_keywords_from_input(user_input)
-        if not keywords:
-            return render_template("index.html", hospitals=["Sorry, I couldn't understand your request."])
+        recommendations = recommend_hospitals2(user_input).to_dict(orient='records')
+
+        # keywords = extract_keywords_from_input(user_input)
+        # if not keywords:
+        #     return render_template("index.html", hospitals=["Sorry, I couldn't understand your request."])
 
         # Combine keywords into a single search string
-        combined_query = " ".join("hi")
-        print("Combined Query:", keywords)
-        recommendations = handle_user_input_multi(keywords, ethiopian_hospitals, cosine_sim, hospital_names)
-        print("Recommendations:", recommendations)
+        # combined_query = " ".join("hi")
+        # print("Combined Query:", keywords)
+        # recommendations = handle_user_input_multi(keywords, ethiopian_hospitals, cosine_sim, hospital_names)
+        # print("Recommendations:", recommendations)
         return render_template('index.html', hospitals=recommendations)
     # hospital_name = request.form.get('symptoms')
     # # mysysms = request.form.get('mysysms')
