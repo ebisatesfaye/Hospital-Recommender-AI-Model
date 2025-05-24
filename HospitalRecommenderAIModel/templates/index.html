@@ -150,9 +150,11 @@ background-color: #e9e9e9;
    <div class="display-result messages" >
         {% for hospital in hospitals %}
         <div class="hospital">
-            <strong>{{ hospital['Hospital_Name'] }}</strong><br>
+            <h3>{{ hospital['Hospital_Name'] }}</h3>
             📍 {{ hospital['Region'] }}, {{ hospital['City'] }}<br>
-            🛠 Services: {{ hospital['Services'] }}
+          🛠 <strong>Services :</strong> {{
+                    hospital['Services'].replace('|', ', ').title()
+                }} <br> <br>
         </div>
         {% endfor %}
     <!-- <div>
